@@ -1047,7 +1047,7 @@ av_cold int ff_h264_decode_init(AVCodecContext *avctx){
 //    s->decode_mb= ff_h263_decode_mb;
     s->quarter_sample = 1;
     if(!avctx->has_b_frames)
-    s->low_delay= 1;
+        s->low_delay= 1;
 
     avctx->chroma_sample_location = AVCHROMA_LOC_LEFT;
 
@@ -1071,6 +1071,9 @@ av_cold int ff_h264_decode_init(AVCodecContext *avctx){
 
     if(h->sps.bitstream_restriction_flag && s->avctx->has_b_frames < h->sps.num_reorder_frames){
         s->avctx->has_b_frames = h->sps.num_reorder_frames;
+        s->low_delay = 0;
+    } else if (!h->sps.bitstream_restriction_flag && s->avctx->has_b_frames) {
+        s->avctx->has_b_frames = 2; // we don't know if bpyramid is used later
         s->low_delay = 0;
     }
 
