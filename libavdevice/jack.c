@@ -200,6 +200,10 @@ static int start_jack(AVFormatContext *context)
     self->filled_pkts = av_fifo_alloc_array(FIFO_PACKETS_NUM, sizeof(AVPacket));
     /* New packets FIFO with one extra packet for safety against underruns */
     self->new_pkts    = av_fifo_alloc_array((FIFO_PACKETS_NUM + 1), sizeof(AVPacket));
+    if (!self->new_pkts) {
+        jack_client_close(self->client);
+        return AVERROR(ENOMEM);
+    }
     if ((test = supply_new_packets(self, context))) {
         jack_client_close(self->client);
         return test;
@@ -214,7 +218,7 @@ static void free_pkt_fifo(AVFifoBuffer **fifo)
     AVPacket pkt;
     while (av_fifo_size(*fifo)) {
         av_fifo_generic_read(*fifo, &pkt, sizeof(pkt), NULL);
-        av_free_packet(&pkt);
+        av_packet_unref(&pkt);
     }
     av_fifo_freep(fifo);
 }
@@ -248,14 +252,14 @@ static int audio_read_header(AVFormatContext *context)
         return AVERROR(ENOMEM);
     }
 
-    stream->codec->codec_type   = AVMEDIA_TYPE_AUDIO;
+    stream->codecpar->codec_type   = AVMEDIA_TYPE_AUDIO;
 #if HAVE_BIGENDIAN
-    stream->codec->codec_id     = AV_CODEC_ID_PCM_F32BE;
+    stream->codecpar->codec_id     = AV_CODEC_ID_PCM_F32BE;
 #else
-    stream->codec->codec_id     = AV_CODEC_ID_PCM_F32LE;
+    stream->codecpar->codec_id     = AV_CODEC_ID_PCM_F32LE;
 #endif
-    stream->codec->sample_rate  = self->sample_rate;
-    stream->codec->channels     = self->nports;
+    stream->codecpar->sample_rate  = self->sample_rate;
+    stream->codecpar->channels     = self->nports;
 
     avpriv_set_pts_info(stream, 64, 1, 1000000);  /* 64 bits pts in us */
     return 0;

@@ -87,6 +87,7 @@
       </xsd:sequence>
 
       <xsd:attribute name="media_type"    type="xsd:string" use="required"/>
+      <xsd:attribute name="stream_index"  type="xsd:int"  />
       <xsd:attribute name="key_frame"     type="xsd:int"    use="required"/>
       <xsd:attribute name="pts"           type="xsd:long" />
       <xsd:attribute name="pts_time"      type="xsd:float"/>
@@ -128,6 +129,7 @@
     <xsd:complexType name="frameSideDataType">
         <xsd:attribute name="side_data_type"              type="xsd:string"/>
         <xsd:attribute name="side_data_size"              type="xsd:int"   />
+        <xsd:attribute name="timecode"                    type="xsd:string"/>
     </xsd:complexType>
 
     <xsd:complexType name="subtitleType">
@@ -164,14 +166,12 @@
       <xsd:attribute name="visual_impaired"  type="xsd:int" use="required" />
       <xsd:attribute name="clean_effects"    type="xsd:int" use="required" />
       <xsd:attribute name="attached_pic"     type="xsd:int" use="required" />
+      <xsd:attribute name="timed_thumbnails" type="xsd:int" use="required" />
     </xsd:complexType>
 
     <xsd:complexType name="streamType">
       <xsd:sequence>
         <xsd:element name="disposition" type="ffprobe:streamDispositionType" minOccurs="0" maxOccurs="1"/>
-        <xsd:element name="tag" type="ffprobe:tagType" minOccurs="0" maxOccurs="unbounded"/>
-      </xsd:sequence>
-      <xsd:sequence>
         <xsd:element name="tag" type="ffprobe:tagType" minOccurs="0" maxOccurs="unbounded"/>
         <xsd:element name="side_data_list" type="ffprobe:packetSideDataListType"   minOccurs="0" maxOccurs="1" />
       </xsd:sequence>
@@ -202,6 +202,7 @@
       <xsd:attribute name="color_transfer"       type="xsd:string"/>
       <xsd:attribute name="color_primaries"      type="xsd:string"/>
       <xsd:attribute name="chroma_location"      type="xsd:string"/>
+      <xsd:attribute name="field_order"          type="xsd:string"/>
       <xsd:attribute name="timecode"             type="xsd:string"/>
       <xsd:attribute name="refs"                 type="xsd:int"/>
 
@@ -275,6 +276,8 @@
     <xsd:complexType name="programVersionType">
       <xsd:attribute name="version"          type="xsd:string" use="required"/>
       <xsd:attribute name="copyright"        type="xsd:string" use="required"/>
+      <xsd:attribute name="build_date"       type="xsd:string"/>
+      <xsd:attribute name="build_time"       type="xsd:string"/>
       <xsd:attribute name="compiler_ident"   type="xsd:string" use="required"/>
       <xsd:attribute name="configuration"    type="xsd:string" use="required"/>
     </xsd:complexType>
